@@ -1,84 +1,57 @@
-/* ================================================
-   PORTFOLIO SCRIPTS - SACHIN KUMAR
-   Interactive Features & Animations
-   ================================================ */
+// ================== ASTRALAB-STYLE ANIMATIONS ==================
 
+// Initialize Lucide Icons
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize Lucide icons
     lucide.createIcons();
-
-    // Initialize all features
-    initNavigation();
+    initNavbar();
+    initMobileMenu();
     initScrollAnimations();
-    initNavbarScroll();
+    initCounterAnimations();
     initSmoothScroll();
 });
 
-/* -------------------- Mobile Navigation -------------------- */
-function initNavigation() {
-    const navToggle = document.getElementById('nav-toggle');
-    const navMenu = document.getElementById('nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
-
-    if (!navToggle || !navMenu) return;
-
-    // Toggle mobile menu
-    navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navMenu.classList.toggle('active');
-        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-    });
-
-    // Close menu when clicking a link
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            navToggle.classList.remove('active');
-            navMenu.classList.remove('active');
-            document.body.style.overflow = '';
-        });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-            navToggle.classList.remove('active');
-            navMenu.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    });
-}
-
-/* -------------------- Navbar Scroll Effect -------------------- */
-function initNavbarScroll() {
+// -------------------- Navbar Scroll Effect --------------------
+function initNavbar() {
     const navbar = document.getElementById('navbar');
+    let lastScroll = 0;
 
-    if (!navbar) return;
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
 
-    const handleScroll = () => {
-        if (window.scrollY > 50) {
+        // Add/remove scrolled class
+        if (currentScroll > 50) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
         }
-    };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
+        lastScroll = currentScroll;
+    });
 }
 
-/* -------------------- Scroll Animations -------------------- */
-function initScrollAnimations() {
-    // Elements to animate
-    const animatedElements = document.querySelectorAll(
-        '.stat-card, .timeline-item, .project-card, .skill-category, .education-card, .section-title, .about-text, .contact-content'
-    );
+// -------------------- Mobile Menu --------------------
+function initMobileMenu() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    const navLinks = document.querySelectorAll('.nav-link');
 
-    // Add fade-in class to elements
-    animatedElements.forEach(el => {
-        el.classList.add('fade-in');
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        navToggle.classList.toggle('active');
+        document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
     });
 
-    // Intersection Observer for fade-in animations
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            navToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+}
+
+// -------------------- Scroll Animations --------------------
+function initScrollAnimations() {
     const observerOptions = {
         root: null,
         rootMargin: '0px 0px -100px 0px',
@@ -88,24 +61,77 @@ function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Add stagger delay for grouped elements
-                const parent = entry.target.parentElement;
-                const siblings = parent ? Array.from(parent.children).filter(el => el.classList.contains('fade-in')) : [];
-                const index = siblings.indexOf(entry.target);
+                entry.target.classList.add('visible');
 
-                setTimeout(() => {
-                    entry.target.classList.add('visible');
-                }, index * 100);
+                // Unobserve after animation
+                if (!entry.target.classList.contains('keep-observing')) {
+                    observer.unobserve(entry.target);
+                }
+            }
+        });
+    }, observerOptions);
 
+    // Observe all animated elements
+    const animatedElements = document.querySelectorAll(
+        '.fade-in, .fade-in-left, .fade-in-right, .scale-in'
+    );
+
+    animatedElements.forEach(el => {
+        observer.observe(el);
+    });
+}
+
+// -------------------- Counter Animations --------------------
+function initCounterAnimations() {
+    const counters = document.querySelectorAll('.stat-value');
+
+    const observerOptions = {
+        threshold: 0.5
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
                 observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    animatedElements.forEach(el => observer.observe(el));
+    counters.forEach(counter => {
+        observer.observe(counter);
+    });
 }
 
-/* -------------------- Smooth Scroll -------------------- */
+function animateCounter(element) {
+    const text = element.textContent;
+    const hasPercent = text.includes('%');
+    const hasPlus = text.includes('+');
+    const target = parseInt(text.replace(/[^0-9]/g, ''));
+
+    if (isNaN(target)) return;
+
+    let current = 0;
+    const increment = target / 60;
+    const duration = 1500;
+    const stepTime = duration / 60;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+
+        let displayValue = Math.round(current);
+        if (hasPlus) displayValue = displayValue + '+';
+        if (hasPercent) displayValue = displayValue + '%';
+
+        element.textContent = displayValue;
+    }, stepTime);
+}
+
+// -------------------- Smooth Scroll --------------------
 function initSmoothScroll() {
     const links = document.querySelectorAll('a[href^="#"]');
 
@@ -115,13 +141,13 @@ function initSmoothScroll() {
 
             if (href === '#') return;
 
+            e.preventDefault();
+
             const target = document.querySelector(href);
 
             if (target) {
-                e.preventDefault();
-
-                const navHeight = document.getElementById('navbar')?.offsetHeight || 72;
-                const targetPosition = target.getBoundingClientRect().top + window.scrollY - navHeight;
+                const navHeight = document.getElementById('navbar').offsetHeight;
+                const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
 
                 window.scrollTo({
                     top: targetPosition,
@@ -132,71 +158,151 @@ function initSmoothScroll() {
     });
 }
 
-/* -------------------- Active Nav Link Highlighting -------------------- */
-function initActiveNavHighlight() {
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-link');
+// -------------------- Parallax Effect (Optional) --------------------
+function initParallax() {
+    const hero = document.querySelector('.hero-bg');
 
-    const observerOptions = {
-        root: null,
-        rootMargin: '-50% 0px -50% 0px',
-        threshold: 0
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${id}`) {
-                        link.classList.add('active');
-                    }
-                });
-            }
+    if (hero) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            hero.style.transform = `translateY(${scrolled * 0.3}px)`;
         });
-    }, observerOptions);
-
-    sections.forEach(section => observer.observe(section));
+    }
 }
 
-/* -------------------- Typing Effect (Optional) -------------------- */
-function initTypingEffect() {
-    const tagline = document.getElementById('typed-tagline');
+// -------------------- Magnetic Button Effect --------------------
+function initMagneticButtons() {
+    const buttons = document.querySelectorAll('.btn-primary');
 
-    if (!tagline) return;
+    buttons.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
 
-    const text = tagline.textContent;
-    tagline.textContent = '';
-    tagline.style.opacity = '1';
+            btn.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+        });
 
-    let index = 0;
-    const speed = 30;
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'translate(0, 0)';
+        });
+    });
+}
+
+// -------------------- Card Tilt Effect --------------------
+function initTiltEffect() {
+    const cards = document.querySelectorAll('.project-card, .skill-category, .case-study-card');
+
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+        });
+    });
+}
+
+// -------------------- Typing Effect --------------------
+function typeWriter(element, text, speed = 50) {
+    let i = 0;
+    element.textContent = '';
 
     function type() {
-        if (index < text.length) {
-            tagline.textContent += text.charAt(index);
-            index++;
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
             setTimeout(type, speed);
         }
     }
 
-    // Start typing after a delay
-    setTimeout(type, 500);
+    type();
 }
 
-/* -------------------- Console Easter Egg -------------------- */
-console.log(`
-%c👋 Hey there, fellow developer!
+// -------------------- Active Nav Link Highlight --------------------
+function initActiveNavHighlight() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
 
-%cThanks for checking out my portfolio.
-If you're interested in my work or want to collaborate,
-feel free to reach out!
+    window.addEventListener('scroll', () => {
+        let current = '';
 
-%c- Sachin Kumar
-`,
-    'color: #7c3aed; font-size: 20px; font-weight: bold;',
-    'color: #06b6d4; font-size: 14px;',
-    'color: #94a3b8; font-size: 12px; font-style: italic;'
-);
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+
+            if (window.pageYOffset >= sectionTop - 200) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+
+// Initialize additional effects after DOM is fully loaded
+window.addEventListener('load', () => {
+    // Uncomment to enable additional effects
+    // initParallax();
+    // initMagneticButtons();
+    // initTiltEffect();
+    initActiveNavHighlight();
+});
+
+// -------------------- Preloader (Optional) --------------------
+function hidePreloader() {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    }
+}
+
+// -------------------- Cursor Effect (Optional) --------------------
+function initCustomCursor() {
+    const cursor = document.createElement('div');
+    cursor.className = 'custom-cursor';
+    document.body.appendChild(cursor);
+
+    const cursorDot = document.createElement('div');
+    cursorDot.className = 'cursor-dot';
+    document.body.appendChild(cursorDot);
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+
+        cursorDot.style.left = e.clientX + 'px';
+        cursorDot.style.top = e.clientY + 'px';
+    });
+
+    // Add hover effect for interactive elements
+    const hoverElements = document.querySelectorAll('a, button, .project-card');
+
+    hoverElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.classList.add('hover');
+        });
+
+        el.addEventListener('mouseleave', () => {
+            cursor.classList.remove('hover');
+        });
+    });
+}
