@@ -257,10 +257,11 @@ function initActiveNavHighlight() {
 
 // Initialize additional effects after DOM is fully loaded
 window.addEventListener('load', () => {
-    // Uncomment to enable additional effects
-    // initParallax();
-    // initMagneticButtons();
-    // initTiltEffect();
+    // Enable all advanced effects for WOW factor
+    initParallax();
+    initMagneticButtons();
+    initTiltEffect();
+    initCustomCursor();
     initActiveNavHighlight();
 });
 
