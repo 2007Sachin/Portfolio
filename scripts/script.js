@@ -257,13 +257,39 @@ function initActiveNavHighlight() {
 
 // Initialize additional effects after DOM is fully loaded
 window.addEventListener('load', () => {
-    // Enable all advanced effects for WOW factor
+    // Clean, subtle effects (Stripe + Apple aesthetic)
     initParallax();
     initMagneticButtons();
-    initTiltEffect();
-    initCustomCursor();
+    // Disabled for cleaner look: initTiltEffect();
+    // Disabled for cleaner look: initCustomCursor();
     initActiveNavHighlight();
+    initHeroTextReveal();
 });
+
+// -------------------- Hero Text Reveal (Apple-style) --------------------
+function initHeroTextReveal() {
+    const heroTitle = document.querySelector('.hero-title');
+    const heroDescription = document.querySelector('.hero-description');
+    const heroBadge = document.querySelector('.hero-badge');
+    const heroCta = document.querySelector('.hero-cta');
+
+    // Add reveal classes with staggered timing
+    setTimeout(() => {
+        if (heroBadge) heroBadge.classList.add('revealed');
+    }, 200);
+
+    setTimeout(() => {
+        if (heroTitle) heroTitle.classList.add('revealed');
+    }, 400);
+
+    setTimeout(() => {
+        if (heroDescription) heroDescription.classList.add('revealed');
+    }, 700);
+
+    setTimeout(() => {
+        if (heroCta) heroCta.classList.add('revealed');
+    }, 900);
+}
 
 // -------------------- Preloader (Optional) --------------------
 function hidePreloader() {
