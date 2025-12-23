@@ -57,11 +57,11 @@
     --font-size-lg: 1.125rem;
     --font-size-xl: 1.25rem;
     --font-size-2xl: 1.5rem;
-    --font-size-3xl: 2rem;
-    --font-size-4xl: 2.5rem;
-    --font-size-5xl: 3.5rem;
-    --font-size-6xl: 4.5rem;
-    --font-size-hero: 5.5rem;
+    --font-size-3xl: clamp(1.5rem, 4vw, 2rem);
+    --font-size-4xl: clamp(1.75rem, 5vw, 2.5rem);
+    --font-size-5xl: clamp(2rem, 6vw, 3.5rem);
+    --font-size-6xl: clamp(2.5rem, 8vw, 4.5rem);
+    --font-size-hero: clamp(3rem, 10vw, 5.5rem);
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -69,10 +69,10 @@
     --spacing-md: 1rem;
     --spacing-lg: 1.5rem;
     --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    --spacing-3xl: 4rem;
-    --spacing-4xl: 6rem;
-    --spacing-5xl: 8rem;
+    --spacing-2xl: clamp(1.5rem, 4vh, 3rem);
+    --spacing-3xl: clamp(2rem, 6vh, 4rem);
+    --spacing-4xl: clamp(3rem, 8vh, 6rem);
+    --spacing-5xl: clamp(4rem, 10vh, 8rem);
 
     /* Border Radius */
     --radius-sm: 4px;
@@ -204,9 +204,11 @@ button {
     box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
+@media (hover: hover) {
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-glow);
+    }
 }
 
 .btn-secondary {
@@ -343,7 +345,7 @@ button {
 
 /* -------------------- Hero Section -------------------- */
 .hero {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     padding-top: 100px;
@@ -668,7 +670,7 @@ button {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(clamp(320px, 45%, 1fr), 1fr));
     gap: var(--spacing-xl);
 }
 
@@ -932,7 +934,7 @@ button {
 
 .github-repos-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: var(--spacing-lg);
 }
 
@@ -1056,7 +1058,7 @@ button {
 
 .case-studies-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: var(--spacing-xl);
 }
 
@@ -1165,7 +1167,7 @@ button {
 
 .skills-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: var(--spacing-xl);
 }
 
@@ -1267,7 +1269,7 @@ button {
 
 .education-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(clamp(320px, 45%, 1fr), 1fr));
     gap: var(--spacing-xl);
 }
 
@@ -1565,21 +1567,10 @@ button {
 /* -------------------- Responsive Design -------------------- */
 @media (max-width: 1200px) {
     :root {
-        --font-size-hero: 4.5rem;
+        --font-size-hero: 4rem;
     }
 
-    .hero-content {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-3xl);
-    }
-
-    .hero-stats {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .github-repos-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    /* Grids are fluid */
 }
 
 @media (max-width: 992px) {
@@ -1600,6 +1591,7 @@ button {
         justify-content: center;
         align-items: center;
         gap: var(--spacing-xl);
+        height: 100dvh;
     }
 
     .nav-menu.active {
@@ -1611,34 +1603,47 @@ button {
         z-index: 1001;
     }
 
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-3xl);
+    }
+
     .about-content {
         grid-template-columns: 1fr;
     }
 
     .about-image {
-        max-width: 300px;
-        margin: 0 auto;
+        max-width: 320px;
+        margin: 0 auto var(--spacing-xl);
     }
 
-    .projects-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .skills-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .case-studies-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .github-repos-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    /* Grids are now fluid with auto-fit/auto-fill */
 
     .footer-content {
         grid-template-columns: 1fr;
         gap: var(--spacing-2xl);
+    }
+}
+
+/* -------------------- Tablet/Laptop Optimization (1024px - 1366px) -------------------- */
+@media (min-width: 1024px) and (max-width: 1366px) {
+    .container {
+        padding: 0 var(--spacing-lg);
+    }
+
+    .hero-content {
+        grid-template-columns: 55% 1fr;
+        gap: var(--spacing-2xl);
+    }
+
+    .about-content {
+        grid-template-columns: 320px 1fr;
+        gap: var(--spacing-2xl);
+    }
+
+    :root {
+        --spacing-4xl: 4rem;
+        --spacing-5xl: 6rem;
     }
 }
 
@@ -1654,17 +1659,7 @@ button {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .skills-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .education-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .github-repos-grid {
-        grid-template-columns: 1fr;
-    }
+    /* Grids remain fluid */
 
     .footer-bottom {
         flex-direction: column;
@@ -1778,13 +1773,16 @@ button {
         border-color 0.3s ease;
 }
 
-.project-card:hover,
-.skill-category:hover,
-.case-study-card:hover,
-.github-repo-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 60px rgba(99, 102, 241, 0.1);
+@media (hover: hover) {
+
+    .project-card:hover,
+    .skill-category:hover,
+    .case-study-card:hover,
+    .github-repo-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+            0 0 60px rgba(99, 102, 241, 0.1);
+    }
 }
 
 /* Refined Button Hover */
@@ -1793,9 +1791,11 @@ button {
         box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+@media (hover: hover) {
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
 }
 
 /* Stat Cards - Subtle Hover */
@@ -1804,9 +1804,11 @@ button {
         border-color 0.3s ease;
 }
 
-.stat-card:hover {
-    transform: translateY(-6px);
-    border-color: var(--color-accent);
+@media (hover: hover) {
+    .stat-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--color-accent);
+    }
 }
 
 /* Hero Badge - Subtle Glow */
