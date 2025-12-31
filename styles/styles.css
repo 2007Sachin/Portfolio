@@ -670,7 +670,7 @@ button {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(clamp(320px, 45%, 1fr), 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-xl);
 }
 
@@ -701,7 +701,7 @@ button {
 
 .project-preview {
     position: relative;
-    aspect-ratio: 16/9;
+    aspect-ratio: 3/1;
     overflow: hidden;
 }
 
